@@ -1,0 +1,164 @@
+import axios, { AxiosError } from 'axios';
+import { API_BASE_URL, resolveStreamUrl, resolveProxyMediaUrl } from '../config/env';
+import {
+  MediaAnalyzeRequest,
+  MediaAnalyzeResponse,
+  BatchAnalyzeRequest,
+  BatchAnalyzeResponse,
+  DownloadRequest,
+  DownloadTaskResponse,
+  DownloadProgressEvent,
+  TrimRequest,
+  TrimResponse,
+  CarouselZipRequest,
+  CarouselZipResponse,
+  HealthResponse,
+  ErrorResponse,
+} from '../types/media';
+
+/**
+ * Pre-configured Axios instance communicating with the FastAPI backend
+ */
+export const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 60000, // 60 seconds timeout for metadata extraction
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  },
+});
+
+/**
+ * Standardizes API error messages from FastAPI ErrorResponse or network drops
+ */
+export function extractErrorMessage(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    const axiosErr = error as AxiosError<ErrorResponse | { detail?: string }>;
+    if (axiosErr.response?.data) {
+      const data = axiosErr.response.data;
+      if (typeof data === 'object' && 'detail' in data && data.detail) {
+        return typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
+      }
+    }
+    if (axiosErr.message === 'Network Error') {
+      return 'Cannot connect to backend server. Please verify CBX-Stream backend is running at http://localhost:8000.';
+    }
+    return axiosErr.message || 'An unexpected network error occurred.';
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return 'Unknown error occurred while processing request.';
+}
+
+export const apiService = {
+  /**
+   * Analyze a single media URL to extract title, thumbnails, platform theme, video & audio streams.
+   */
+  async analyzeUrl(url: string, extractFlat = false): Promise<MediaAnalyzeResponse> {
+    const payload: MediaAnalyzeRequest = { url, extract_flat: extractFlat };
+    const response = await apiClient.post<MediaAnalyzeResponse>('/analyze', payload);
+    return response.data;
+  },
+
+  /**
+   * Concurrently analyze multiple URLs or playlist entries.
+   */
+  async batchAnalyzeUrls(urls: string[]): Promise<BatchAnalyzeResponse> {
+    const payload: BatchAnalyzeRequest = { urls };
+    const response = await apiClient.post<BatchAnalyzeResponse>('/batch-analyze', payload);
+    return response.data;
+  },
+
+  /**
+   * Initiate an asynchronous media download or DASH merger job.
+   */
+  async startDownload(payload: DownloadRequest): Promise<DownloadTaskResponse> {
+    const response = await apiClient.post<DownloadTaskResponse>('/download', payload);
+    return response.data;
+  },
+
+  /**
+   * Query current task status via REST fallback.
+   */
+  async getDownloadStatus(taskId: string): Promise<DownloadProgressEvent> {
+    const response = await apiClient.get<DownloadProgressEvent>(`/download/status/${taskId}`);
+    return response.data;
+  },
+
+  /**
+   * Precision trim video or audio between start and end timestamps.
+   */
+  async trimMedia(payload: TrimRequest): Promise<TrimResponse> {
+    const response = await apiClient.post<TrimResponse>('/trim', payload);
+    return response.data;
+  },
+
+  /**
+   * Bundle multiple carousel images and videos into a single ZIP archive.
+   */
+  async bundleCarouselZip(payload: CarouselZipRequest): Promise<CarouselZipResponse> {
+    const response = await apiClient.post<CarouselZipResponse>('/carousel/zip', payload);
+    return response.data;
+  },
+
+  /**
+   * System health check and diagnostic metrics.
+   */
+  async getHealth(): Promise<HealthResponse> {
+    const response = await apiClient.get<HealthResponse>('/health', { timeout: 8000 });
+    return response.data;
+  },
+
+  /**
+   * Check status of YouTube cookies for bot bypass.
+   */
+  async getCookiesStatus(): Promise<{ configured: boolean; cookies_path: string | null; instructions: string }> {
+    const response = await apiClient.get('/cookies', { timeout: 8000 });
+    return response.data;
+  },
+
+  /**
+   * Upload cookies.txt to backend to bypass YouTube bot detection.
+   */
+  async uploadCookies(file: File): Promise<{ success: boolean; message: string; file_size_bytes: number }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await apiClient.post('/cookies', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  /**
+   * Generate direct stream or download URL for completed task.
+   */
+  getStreamUrl(taskId: string, inline = false): string {
+    return resolveStreamUrl(`/api/v1/stream/${taskId}?inline=${inline}`);
+  },
+
+  /**
+   * Reverse proxy media URL to bypass hotlinking or CORS restrictions.
+   */
+  getProxyUrl(remoteUrl?: string | null): string {
+    return resolveProxyMediaUrl(remoteUrl);
+  },
+
+  /**
+   * Trigger direct browser download for a completed stream URL.
+   */
+  triggerFileDownload(streamUrl: string, filename?: string): void {
+    const fullUrl = resolveStreamUrl(streamUrl);
+    const anchor = document.createElement('a');
+    anchor.href = fullUrl;
+    if (filename) {
+      anchor.setAttribute('download', filename);
+    }
+    anchor.style.display = 'none';
+    document.body.appendChild(anchor);
+    anchor.click();
+    setTimeout(() => {
+      document.body.removeChild(anchor);
+    }, 150);
+  },
+};
