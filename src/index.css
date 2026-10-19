@@ -159,6 +159,38 @@
     outline: none;
   }
 
+  /* Mobile Performance Optimizations (Eliminates backdrop-filter lag on iPhone 7 Plus / mobile devices) */
+  @media (max-width: 640px) {
+    .glass-panel,
+    .glass-panel-accent,
+    .rgb-border-container-inner {
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      background: rgba(8, 12, 24, 0.92) !important;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+
+    .glass-card {
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+      background: rgba(14, 20, 36, 0.88) !important;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+
+    .glass-pill,
+    .glass-pill-selected {
+      backdrop-filter: blur(6px) !important;
+      -webkit-backdrop-filter: blur(6px) !important;
+    }
+
+    .glass-input {
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+    }
+  }
+
   /* Chameleon dynamic gradient button */
   .btn-chameleon {
     background: var(--cbx-gradient, linear-gradient(135deg, #6366F1 0%, #4F46E5 100%));
