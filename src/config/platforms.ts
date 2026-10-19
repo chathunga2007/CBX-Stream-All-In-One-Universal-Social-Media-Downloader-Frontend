@@ -220,20 +220,20 @@ export const PLATFORM_THEMES: Record<string, PlatformTheme> = {
  * Regex patterns matching social platforms for instant client-side detection.
  */
 const PATTERNS: [RegExp, string][] = [
-  [/(?:https?:\/\/)?(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?|shorts\/|live\/|embed\/)|youtu\.be\/)/i, 'youtube'],
-  [/(?:https?:\/\/)?(?:www\.|vm\.|vt\.)?tiktok\.com\//i, 'tiktok'],
-  [/(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p\/|reel\/|reels\/|stories\/|tv\/)/i, 'instagram'],
-  [/(?:https?:\/\/)?(?:www\.|m\.|fb\.)?(?:facebook\.com|fb\.watch)\//i, 'facebook'],
-  [/(?:https?:\/\/)?(?:www\.)?(?:twitter\.com|x\.com)\//i, 'twitter'],
-  [/(?:https?:\/\/)?(?:www\.)?reddit\.com\/r\/.+\/comments\//i, 'reddit'],
-  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?pinterest\.(?:com|[a-z]{2,3})\/pin\//i, 'pinterest'],
-  [/(?:https?:\/\/)?(?:www\.)?soundcloud\.com\//i, 'soundcloud'],
-  [/(?:https?:\/\/)?(?:open\.)?spotify\.com\//i, 'spotify'],
-  [/(?:https?:\/\/)?(?:www\.)?threads\.net\//i, 'threads'],
-  [/(?:https?:\/\/)?(?:www\.)?twitch\.tv\//i, 'twitch'],
-  [/(?:https?:\/\/)?(?:www\.)?vimeo\.com\//i, 'vimeo'],
-  [/(?:https?:\/\/)?(?:www\.)?bilibili\.com\/video\//i, 'bilibili'],
-  [/(?:https?:\/\/)?(?:www\.)?linkedin\.com\/(?:posts\/|feed\/update\/|learning\/|video\/|pulse\/)/i, 'linkedin'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?(?:youtube\.com|youtu\.be|youtube-nocookie\.com)\//i, 'youtube'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?(?:tiktok\.com|douyin\.com|tiktokv\.com)\//i, 'tiktok'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?(?:instagram\.com|instagr\.am|ig\.me)\//i, 'instagram'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?(?:facebook\.com|fb\.watch|fb\.com|fb\.gg)\//i, 'facebook'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?(?:twitter\.com|x\.com|t\.co|vxtwitter\.com|fxtwitter\.com|fixupx\.com)\//i, 'twitter'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?(?:reddit\.com|redd\.it)\//i, 'reddit'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?(?:pinterest\.(?:com|[a-z]{2,3}(?:\.[a-z]{2})?)|pin\.it)\//i, 'pinterest'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?soundcloud\.com\//i, 'soundcloud'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?(?:spotify\.com|spotify\.link)\//i, 'spotify'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?threads\.(?:net|com)\//i, 'threads'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?twitch\.tv\//i, 'twitch'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?vimeo\.com\//i, 'vimeo'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?(?:bilibili\.com|b23\.tv)\//i, 'bilibili'],
+  [/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)?(?:linkedin\.com|lnkd\.in)\//i, 'linkedin'],
 ];
 
 /**
