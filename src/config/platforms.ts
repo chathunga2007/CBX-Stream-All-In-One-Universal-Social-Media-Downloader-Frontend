@@ -267,4 +267,24 @@ export const FEATURED_PLATFORMS = [
   { id: 'soundcloud', name: 'SoundCloud', color: '#FF5500', icon: 'soundcloud', sample: 'http://soundcloud.com/ethmusic/lostin-powers-she-so-heavy' },
   { id: 'pinterest', name: 'Pinterest', color: '#E60023', icon: 'pinterest', sample: 'https://pinterest.com/pin/dive-into-serenity-blue-lagoon-pedi-nails-for-a-tranquil-and-refreshing-spa-experience-video-in-2024--2885187256207927' },
   { id: 'reddit', name: 'Reddit', color: '#FF4500', icon: 'reddit', sample: 'https://www.reddit.com/r/aww/comments/90bu6w/heat_index_was_110_degrees_so_we_offered_him_a/' },
-];
+];/**
+ * Validate whether an input string is a valid media URL suitable for automatic analysis.
+ */
+export function isValidMediaUrl(url: string): boolean {
+  if (!url || typeof url !== 'string') return false;
+  const clean = url.trim();
+  if (clean.length < 8) return false;
+
+  for (const [pattern] of PATTERNS) {
+    if (pattern.test(clean)) {
+      return true;
+    }
+  }
+
+  try {
+    const parsed = new URL(clean.startsWith('http://') || clean.startsWith('https://') ? clean : `https://${clean}`);
+    return parsed.hostname.includes('.') && parsed.hostname.length > 3 && parsed.pathname.length > 1;
+  } catch {
+    return /^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(clean);
+  }
+}
