@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Download, Film, Zap, CheckCircle2, HardDrive, Edit3, Music } from 'lucide-react';
 import { MediaFormat, MediaAnalyzeResponse } from '../../types/media';
 
@@ -48,10 +48,10 @@ export const VideoFormatsTab: React.FC<VideoFormatsTabProps> = ({ media, onDownl
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
           <button
             onClick={() => setShowFilenameInput(!showFilenameInput)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg glass-pill hover:bg-white/10 text-white/80 transition-colors focus:outline-none"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg glass-pill hover:bg-white/10 text-white/80 transition-colors focus:outline-none text-xs"
           >
             <Edit3 className="w-3.5 h-3.5 text-indigo-400" />
             <span>{showFilenameInput ? 'Hide Filename' : 'Custom Name'}</span>
@@ -60,7 +60,7 @@ export const VideoFormatsTab: React.FC<VideoFormatsTabProps> = ({ media, onDownl
           {!isSingleFormat && (
             <button
               onClick={() => onDownload('bestvideo+bestaudio/best', 'Best Available (Auto DASH)', customFilename)}
-              className="btn-chameleon flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white font-bold transition-all focus:outline-none shadow-glow-sm hover:scale-[1.02]"
+              className="btn-chameleon flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-white font-bold transition-all focus:outline-none shadow-glow-sm active:scale-95 sm:hover:scale-[1.02] text-xs"
             >
               <Zap className="w-3.5 h-3.5 text-amber-300" />
               <span>Download Best Video</span>
