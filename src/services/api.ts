@@ -40,8 +40,8 @@ export function extractErrorMessage(error: unknown): string {
         return typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
       }
     }
-    if (axiosErr.message === 'Network Error') {
-      return 'Cannot connect to backend server. Please verify CBX-Stream backend is running at http://localhost:8000.';
+    if (axiosErr.message === 'Network Error' || axiosErr.code === 'ECONNABORTED' || axiosErr.response?.status === 502 || axiosErr.response?.status === 503) {
+      return 'The backend engine is currently waking up from idle sleep or temporarily unreachable. Please allow a few seconds for the cloud instance to start.';
     }
     return axiosErr.message || 'An unexpected network error occurred.';
   }
@@ -104,9 +104,10 @@ export const apiService = {
 
   /**
    * System health check and diagnostic metrics.
+   * Default timeout is 15s to allow cloud containers (Fly.io / Render) to wake up.
    */
-  async getHealth(): Promise<HealthResponse> {
-    const response = await apiClient.get<HealthResponse>('/health', { timeout: 8000 });
+  async getHealth(timeoutMs = 15000): Promise<HealthResponse> {
+    const response = await apiClient.get<HealthResponse>('/health', { timeout: timeoutMs });
     return response.data;
   },
 
