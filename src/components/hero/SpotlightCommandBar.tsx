@@ -9,7 +9,7 @@ interface SpotlightCommandBarProps {
   setUrl: (url: string) => void;
   detectedPlatform: PlatformTheme;
   isAnalyzing: boolean;
-  onAnalyze: (overrideUrl?: string) => void;
+  onAnalyze: (overrideUrl?: string, forceRetry?: boolean) => void;
   isBatchMode: boolean;
   onToggleBatchMode: () => void;
   onSmartPaste: () => void;
@@ -40,7 +40,7 @@ export const SpotlightCommandBar: React.FC<SpotlightCommandBarProps> = ({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !isAnalyzing && isEngineReady && url.trim().length > 3) {
-      onAnalyze();
+      onAnalyze(undefined, true);
     }
   };
 
@@ -50,7 +50,7 @@ export const SpotlightCommandBar: React.FC<SpotlightCommandBarProps> = ({
       const clean = pasted.trim();
       setUrl(clean);
       if (isEngineReady && isValidMediaUrl(clean)) {
-        onAnalyze(clean);
+        onAnalyze(clean, true);
       }
     }
   };
@@ -204,7 +204,7 @@ export const SpotlightCommandBar: React.FC<SpotlightCommandBarProps> = ({
               )
             ) : (
               <button
-                onClick={() => onAnalyze()}
+                onClick={() => onAnalyze(undefined, true)}
                 disabled={isAnalyzing || url.trim().length < 3}
                 className="btn-chameleon flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none shrink-0"
               >
