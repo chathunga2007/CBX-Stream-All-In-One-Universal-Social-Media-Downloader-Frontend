@@ -37,11 +37,44 @@ export function extractErrorMessage(error: unknown): string {
     if (axiosErr.response?.data) {
       const data = axiosErr.response.data;
       if (typeof data === 'object' && 'detail' in data && data.detail) {
-        return typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
+        const rawMsg = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
+        
+        // Clean up and humanize common YouTube anti-bot / player errors
+        if (
+          rawMsg.includes('Video unavailable') ||
+          rawMsg.includes('This video is unavailable') ||
+          rawMsg.toLowerCase().includes('video is unavailable')
+        ) {
+          return 'This video is unavailable, deleted, or removed on YouTube.';
+        }
+        if (rawMsg.includes('Private video') || rawMsg.includes('This video is private')) {
+          return 'This video is marked private on YouTube and cannot be accessed anonymously.';
+        }
+        if (
+          rawMsg.includes('The page needs to be reloaded') ||
+          rawMsg.includes("confirm you're not a bot") ||
+          rawMsg.includes('Sign in to confirm') ||
+          rawMsg.includes('UNPLAYABLE')
+        ) {
+          return "YouTube Anti-Bot Challenge: YouTube blocked automated extraction for this video on the cloud server ('The page needs to be reloaded'). This occurs when YouTube flags cloud datacenter IPs. Please try a different YouTube link or test other platforms (TikTok, Instagram, Facebook, SoundCloud, etc.).";
+        }
+        if (rawMsg.includes('Join this channel') || rawMsg.includes('members-only')) {
+          return 'This video is members-only and requires authenticated channel membership.';
+        }
+
+        return rawMsg;
       }
     }
-    if (axiosErr.message === 'Network Error' || axiosErr.code === 'ECONNABORTED' || axiosErr.response?.status === 502 || axiosErr.response?.status === 503) {
+    if (
+      axiosErr.message === 'Network Error' ||
+      axiosErr.code === 'ECONNABORTED' ||
+      axiosErr.response?.status === 502 ||
+      axiosErr.response?.status === 503
+    ) {
       return 'The backend engine is currently waking up from idle sleep or temporarily unreachable. Please allow a few seconds for the cloud instance to start.';
+    }
+    if (axiosErr.code === 'ETIMEDOUT' || axiosErr.message?.toLowerCase().includes('timeout')) {
+      return 'The request timed out while analyzing media streams. The upstream platform may be throttling requests.';
     }
     return axiosErr.message || 'An unexpected network error occurred.';
   }
