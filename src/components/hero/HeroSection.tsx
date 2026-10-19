@@ -1,6 +1,6 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Zap, ShieldCheck } from 'lucide-react';
+import { Zap, ShieldCheck } from 'lucide-react';
 import { FEATURED_PLATFORMS } from '../../config/platforms';
 
 interface HeroSectionProps {
@@ -9,24 +9,12 @@ interface HeroSectionProps {
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onSelectPlatformSample }) => {
   return (
-    <section className="relative pt-10 pb-6 text-center max-w-4xl mx-auto px-4">
-      {/* Pill Badge */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-pill border border-white/10 text-xs font-semibold text-white/80 shadow-glow-sm mb-6"
-      >
-        <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-        <span>Chameleon Glass UI & Real-Time DASH Transcoding</span>
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-      </motion.div>
-
+    <section className="relative pt-6 sm:pt-10 pb-6 text-center max-w-4xl mx-auto px-4">
       {/* Main Title */}
       <motion.h1
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
+        transition={{ duration: 0.6 }}
         className="font-heading font-black text-4xl sm:text-5xl md:text-6xl tracking-tight text-white leading-[1.12]"
       >
         Universal Archiving &{' '}
@@ -45,7 +33,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSelectPlatformSample
       <motion.p
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        transition={{ duration: 0.6, delay: 0.15 }}
         className="mt-4 text-base sm:text-lg text-white/60 max-w-2xl mx-auto font-normal leading-relaxed"
       >
         Download <span className="text-white font-medium">4K / 8K HDR</span> videos, extract lossless{' '}
@@ -57,7 +45,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSelectPlatformSample
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
+        transition={{ duration: 0.6, delay: 0.25 }}
         className="mt-6 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-white/50"
       >
         <span className="flex items-center gap-1.5">
@@ -75,7 +63,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSelectPlatformSample
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.35 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
         className="mt-8 flex flex-wrap items-center justify-center gap-2 max-w-3xl mx-auto"
       >
         <span className="text-xs text-white/40 font-medium mr-1">Supported:</span>
