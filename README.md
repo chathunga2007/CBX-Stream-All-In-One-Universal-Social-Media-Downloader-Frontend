@@ -2,10 +2,6 @@
   <img src="public/Neon%20CBX-Stream%20Downloader%20Splash%20Poster.png" alt="CBX-Stream Downloader Poster" width="100%" />
 </p>
 
-<p align="center">
-  <img src="public/Neon-Glass-Play-Emblem-Logo.png" alt="CBX-Stream Logo" width="110" />
-</p>
-
 <h1 align="center">⚡ CBX-Stream Universal Social Media Downloader</h1>
 
 <p align="center">
@@ -274,10 +270,6 @@ CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Frontend/
 
 ## 👨‍💻 Architect & Credits
 
-<p align="center">
-  <img src="public/Neon-Glass-Play-Emblem-Logo.png" alt="Chathunga Bimsara Emblem" width="90" />
-</p>
-
 Architected and developed with dedication by **Chathunga Bimsara (CBX)**:
 - **Institution**: Institute of Software Engineering (IJSE)
 - **Role**: Full-Stack Software Engineer & Distributed Systems Architect
@@ -290,3 +282,4 @@ Architected and developed with dedication by **Chathunga Bimsara (CBX)**:
 ## 📄 License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
