@@ -258,15 +258,15 @@ export function detectClientPlatform(url: string): PlatformTheme {
  * Featured platform pill badges for Hero section interaction
  */
 export const FEATURED_PLATFORMS = [
-  { id: 'youtube', name: 'YouTube', color: '#FF0000', icon: 'youtube', sample: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
-  { id: 'facebook', name: 'Facebook', color: '#1877F2', icon: 'facebook', sample: 'https://www.facebook.com/watch/?v=10153231379946729' },
-  { id: 'twitter', name: 'X / Twitter', color: '#1DA1F2', icon: 'twitter', sample: 'https://twitter.com/captainamerica/status/719944021058060289' },
-  { id: 'linkedin', name: 'LinkedIn', color: '#0A66C2', icon: 'linkedin', sample: 'https://www.linkedin.com/posts/activity-7176182855135248384' },
-  { id: 'tiktok', name: 'TikTok', color: '#00F2FE', icon: 'tiktok', sample: 'https://www.tiktok.com/@tiktok/video/7106594312292453678' },
-  { id: 'instagram', name: 'Instagram', color: '#E1306C', icon: 'instagram', sample: 'https://www.instagram.com/reel/C32sL3iL-4A/' },
-  { id: 'soundcloud', name: 'SoundCloud', color: '#FF5500', icon: 'soundcloud', sample: 'http://soundcloud.com/ethmusic/lostin-powers-she-so-heavy' },
-  { id: 'pinterest', name: 'Pinterest', color: '#E60023', icon: 'pinterest', sample: 'https://pinterest.com/pin/dive-into-serenity-blue-lagoon-pedi-nails-for-a-tranquil-and-refreshing-spa-experience-video-in-2024--2885187256207927' },
-  { id: 'reddit', name: 'Reddit', color: '#FF4500', icon: 'reddit', sample: 'https://www.reddit.com/r/aww/comments/90bu6w/heat_index_was_110_degrees_so_we_offered_him_a/' },
+  { id: 'youtube', name: 'YouTube', color: '#FF0000', icon: 'youtube' },
+  { id: 'facebook', name: 'Facebook', color: '#1877F2', icon: 'facebook' },
+  { id: 'twitter', name: 'X / Twitter', color: '#1DA1F2', icon: 'twitter' },
+  { id: 'linkedin', name: 'LinkedIn', color: '#0A66C2', icon: 'linkedin' },
+  { id: 'tiktok', name: 'TikTok', color: '#00F2FE', icon: 'tiktok' },
+  { id: 'instagram', name: 'Instagram', color: '#E1306C', icon: 'instagram' },
+  { id: 'soundcloud', name: 'SoundCloud', color: '#FF5500', icon: 'soundcloud' },
+  { id: 'pinterest', name: 'Pinterest', color: '#E60023', icon: 'pinterest' },
+  { id: 'reddit', name: 'Reddit', color: '#FF4500', icon: 'reddit' },
 ];/**
  * Validate whether an input string is a valid media URL suitable for automatic analysis.
  */
