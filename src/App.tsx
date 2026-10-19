@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AmbientBackground } from './components/layout/AmbientBackground';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
@@ -14,7 +14,8 @@ import { useClipboardDetect } from './hooks/useClipboardDetect';
 import { detectClientPlatform, isValidMediaUrl, PLATFORM_THEMES } from './config/platforms';
 import { apiService, extractErrorMessage } from './services/api';
 import { MediaAnalyzeResponse } from './types/media';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import { AlertCircle, RefreshCw, Zap } from 'lucide-react';
+import { useBackendHealth } from './hooks/useBackendHealth';
 
 export const App: React.FC = () => {
   const [url, setUrl] = useState('');
@@ -23,6 +24,9 @@ export const App: React.FC = () => {
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [isBatchMode, setIsBatchMode] = useState(false);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
+
+  // Cloud backend live health & auto-reconnect engine
+  const backendHealth = useBackendHealth();
 
   // Synchronous client-side platform detection
   const detectedPlatform = detectClientPlatform(url);
@@ -80,11 +84,15 @@ export const App: React.FC = () => {
       } catch (err) {
         setAnalysisError(extractErrorMessage(err));
         setAnalyzedMedia(null);
+        // If cold start/network drop, trigger fast wake-up polling loop
+        if (backendHealth.status !== 'healthy') {
+          backendHealth.wakeUp();
+        }
       } finally {
         setIsAnalyzing(false);
       }
     },
-    [url, isAnalyzing, analyzedMedia]
+    [url, isAnalyzing, analyzedMedia, backendHealth]
   );
 
   /**
@@ -121,6 +129,13 @@ export const App: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [url, isAnalyzing, isBatchMode, analyzedMedia, handleAnalyze]);
+
+  // Auto-resume analysis as soon as backend wakes up from idle sleep
+  useEffect(() => {
+    if (backendHealth.status === 'healthy' && analysisError && url.trim() && isValidMediaUrl(url.trim())) {
+      handleAnalyze(url.trim());
+    }
+  }, [backendHealth.status, analysisError, url, handleAnalyze]);
 
   /**
    * Quick select sample platform link from hero badges
@@ -297,6 +312,7 @@ export const App: React.FC = () => {
         }}
         onOpenQueue={() => setIsDrawerOpen(true)}
         onOpenCreator={() => setIsCreatorModalOpen(true)}
+        backendHealth={backendHealth}
       />
 
       {/* Main App Content Flow */}
@@ -321,6 +337,28 @@ export const App: React.FC = () => {
             onToggleBatchMode={() => setIsBatchMode(true)}
             onSmartPaste={handleSmartPaste}
           />
+        )}
+
+        {/* Cloud Engine Cold Start Notification */}
+        {backendHealth.isWaking && !analyzedMedia && (
+          <div className="w-full max-w-4xl mx-auto px-4 mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-obsidian-900/60 border border-amber-500/30 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 backdrop-blur-xl shadow-lg">
+              <div className="flex items-center gap-2.5">
+                <Zap className="w-4 h-4 text-amber-400 shrink-0 animate-bounce" />
+                <div>
+                  <span className="font-bold text-white">Engine Starting: </span>
+                  <span className="text-white/70">
+                    Cloud container is waking from idle sleep (Attempt {backendHealth.retryCount}/{backendHealth.maxRetries}).
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                <span className="text-[11px] font-mono text-sky-300/90 px-2.5 py-1 rounded-lg bg-sky-500/10 border border-sky-400/20 shrink-0">
+                  ⚡ Auto-connecting (No refresh needed)
+                </span>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Analysis Error Banner */}
