@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { AmbientBackground } from './components/layout/AmbientBackground';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
@@ -14,22 +14,33 @@ import { useClipboardDetect } from './hooks/useClipboardDetect';
 import { detectClientPlatform, isValidMediaUrl, PLATFORM_THEMES } from './config/platforms';
 import { apiService, extractErrorMessage } from './services/api';
 import { MediaAnalyzeResponse } from './types/media';
-import { AlertCircle, RefreshCw, Zap } from 'lucide-react';
+import { AlertCircle, RefreshCw } from 'lucide-react';
 import { useBackendHealth } from './hooks/useBackendHealth';
 
 export const App: React.FC = () => {
   const [url, setUrl] = useState('');
+  const [selectedPlatformId, setSelectedPlatformId] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzedMedia, setAnalyzedMedia] = useState<MediaAnalyzeResponse | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [isBatchMode, setIsBatchMode] = useState(false);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   // Cloud backend live health & auto-reconnect engine
   const backendHealth = useBackendHealth();
 
-  // Synchronous client-side platform detection
-  const detectedPlatform = detectClientPlatform(url);
+  // Synchronous client-side platform detection (or selected platform when input is empty)
+  const detectedPlatform = useMemo(() => {
+    if (url.trim()) {
+      return detectClientPlatform(url);
+    }
+    if (selectedPlatformId && PLATFORM_THEMES[selectedPlatformId]) {
+      return PLATFORM_THEMES[selectedPlatformId];
+    }
+    return PLATFORM_THEMES.generic;
+  }, [url, selectedPlatformId]);
 
   // Dynamic chameleon color injection
   const { updateTheme } = useChameleonTheme(detectedPlatform);
@@ -75,6 +86,12 @@ export const App: React.FC = () => {
         return;
       }
 
+      // If backend engine is not ready (sleeping / checking), trigger wake-up and wait
+      if (!backendHealth.isHealthy) {
+        backendHealth.wakeUp();
+        return;
+      }
+
       setIsAnalyzing(true);
       setAnalysisError(null);
 
@@ -96,7 +113,7 @@ export const App: React.FC = () => {
   );
 
   /**
-   * Smart paste from clipboard and auto-analyze
+   * Smart paste from clipboard and auto-analyze (or queue if engine is waking up)
    */
   const handleSmartPaste = async () => {
     const text = await pasteClipboard();
@@ -104,18 +121,19 @@ export const App: React.FC = () => {
       const clean = text.trim();
       setUrl(clean);
       setAnalysisError(null);
-      if (isValidMediaUrl(clean)) {
+      if (backendHealth.isHealthy && isValidMediaUrl(clean)) {
         handleAnalyze(clean);
       }
     }
   };
 
   /**
-   * Auto-analyze when user enters or pastes a valid media URL (with 600ms debounce)
+   * Auto-analyze when user enters or pastes a valid media URL (with 600ms debounce),
+   * strictly guarded until backend engine is verified online and healthy.
    */
   useEffect(() => {
     const trimmed = url.trim();
-    if (!trimmed || isAnalyzing || isBatchMode) return;
+    if (!trimmed || isAnalyzing || isBatchMode || !backendHealth.isHealthy) return;
 
     if (isValidMediaUrl(trimmed)) {
       if (analyzedMedia && analyzedMedia.url === trimmed) {
@@ -128,24 +146,63 @@ export const App: React.FC = () => {
 
       return () => clearTimeout(timer);
     }
-  }, [url, isAnalyzing, isBatchMode, analyzedMedia, handleAnalyze]);
+  }, [url, isAnalyzing, isBatchMode, analyzedMedia, backendHealth.isHealthy, handleAnalyze]);
 
-  // Auto-resume analysis as soon as backend wakes up from idle sleep
+  // Auto-resume analysis or focus input as soon as backend engine wakes up
   useEffect(() => {
-    if (backendHealth.status === 'healthy' && analysisError && url.trim() && isValidMediaUrl(url.trim())) {
-      handleAnalyze(url.trim());
+    if (backendHealth.status === 'healthy') {
+      const trimmed = url.trim();
+      if (trimmed && isValidMediaUrl(trimmed) && (!analyzedMedia || analyzedMedia.url !== trimmed)) {
+        handleAnalyze(trimmed);
+      } else if (!analyzedMedia) {
+        inputRef.current?.focus();
+      }
     }
-  }, [backendHealth.status, analysisError, url, handleAnalyze]);
+  }, [backendHealth.status, url, analyzedMedia, handleAnalyze]);
 
   /**
-   * Quick select sample platform link from hero badges
+   * Complete reset: clears input URL, removes analyzed video results & errors, resets platform selection
    */
-  const handleSelectPlatformSample = (sampleUrl: string) => {
-    setUrl(sampleUrl);
+  const handleClear = useCallback(() => {
+    setUrl('');
+    setAnalyzedMedia(null);
     setAnalysisError(null);
-    if (isValidMediaUrl(sampleUrl)) {
-      handleAnalyze(sampleUrl);
+    setSelectedPlatformId(null);
+    updateTheme(PLATFORM_THEMES.generic);
+    inputRef.current?.focus();
+  }, [updateTheme]);
+
+  /**
+   * Quick select target platform from hero badges
+   */
+  const handleSelectPlatform = (platformId: string) => {
+    // If clicking the currently selected platform and input is empty, toggle back to generic
+    if (selectedPlatformId === platformId && !url.trim()) {
+      setSelectedPlatformId(null);
+      updateTheme(PLATFORM_THEMES.generic);
+      return;
     }
+
+    setSelectedPlatformId(platformId);
+
+    // If an existing URL belongs to a different platform, clear it
+    if (url.trim()) {
+      const currentUrlPlatform = detectClientPlatform(url);
+      if (currentUrlPlatform.id !== platformId) {
+        setUrl('');
+        setAnalyzedMedia(null);
+        setAnalysisError(null);
+      }
+    }
+
+    const theme = PLATFORM_THEMES[platformId];
+    if (theme) {
+      updateTheme(theme);
+    }
+
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
   };
 
   /**
@@ -214,13 +271,15 @@ export const App: React.FC = () => {
   };
 
   /**
-   * Precision clipper initiator
+   * Precision clipper initiator with format, quality and audio options
    */
   const handleTrimMedia = async (
     startTime: string,
     endTime: string,
     extractAudio: boolean,
     audioFormat: 'mp3' | 'm4a' | 'wav' | 'flac',
+    formatId?: string,
+    audioQuality?: '320' | '256' | '192' | '128',
     customFilename?: string
   ) => {
     if (!analyzedMedia) return;
@@ -231,15 +290,19 @@ export const App: React.FC = () => {
           url: analyzedMedia.url,
           start_time: startTime,
           end_time: endTime,
+          format_id: formatId || 'bestvideo+bestaudio/best',
           extract_audio: extractAudio,
           audio_format: audioFormat,
+          audio_quality: audioQuality,
           custom_filename: customFilename || undefined,
         },
         {
           title: analyzedMedia.title,
           thumbnail: analyzedMedia.thumbnail,
           platform: analyzedMedia.platform,
-          formatLabel: `Clip (${startTime} - ${endTime})`,
+          formatLabel: extractAudio
+            ? `Audio (${audioFormat.toUpperCase()} ${audioQuality || '320'}k) [${startTime}-${endTime}]`
+            : `Video Clip [${startTime}-${endTime}]`,
         }
       );
     } catch (err) {
@@ -307,6 +370,7 @@ export const App: React.FC = () => {
         activeCount={activeDownloads.filter((t) => t.status !== 'completed' && t.status !== 'failed').length}
         currentThemeId={detectedPlatform.id}
         onSelectTheme={(themeId) => {
+          setSelectedPlatformId(themeId);
           const theme = PLATFORM_THEMES[themeId];
           if (theme) updateTheme(theme);
         }}
@@ -317,48 +381,38 @@ export const App: React.FC = () => {
 
       {/* Main App Content Flow */}
       <main className="flex-1 pb-16">
-        {/* Hero Section (Top pill badge removed) */}
-        <HeroSection onSelectPlatformSample={handleSelectPlatformSample} />
+        {/* Hero Section */}
+        <HeroSection
+          selectedPlatformId={
+            url.trim() && detectedPlatform.id !== 'generic'
+              ? detectedPlatform.id
+              : selectedPlatformId
+          }
+          onSelectPlatform={handleSelectPlatform}
+        />
 
         {/* Command Search Bar or Batch Mode View */}
         {isBatchMode ? (
           <BatchPlaylistView
             onQueueBatchDownloads={handleQueueBatchDownloads}
             onClose={() => setIsBatchMode(false)}
+            backendHealth={backendHealth}
           />
         ) : (
           <SpotlightCommandBar
             url={url}
             setUrl={setUrl}
+            inputRef={inputRef}
             detectedPlatform={detectedPlatform}
             isAnalyzing={isAnalyzing}
             onAnalyze={handleAnalyze}
             isBatchMode={isBatchMode}
             onToggleBatchMode={() => setIsBatchMode(true)}
             onSmartPaste={handleSmartPaste}
+            hasAnalyzedMedia={Boolean(analyzedMedia)}
+            onClear={handleClear}
+            backendHealth={backendHealth}
           />
-        )}
-
-        {/* Cloud Engine Cold Start Notification */}
-        {backendHealth.isWaking && !analyzedMedia && (
-          <div className="w-full max-w-4xl mx-auto px-4 mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
-            <div className="p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-obsidian-900/60 border border-amber-500/30 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 backdrop-blur-xl shadow-lg">
-              <div className="flex items-center gap-2.5">
-                <Zap className="w-4 h-4 text-amber-400 shrink-0 animate-bounce" />
-                <div>
-                  <span className="font-bold text-white">Engine Starting: </span>
-                  <span className="text-white/70">
-                    Cloud container is waking from idle sleep (Attempt {backendHealth.retryCount}/{backendHealth.maxRetries}).
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 self-end sm:self-auto">
-                <span className="text-[11px] font-mono text-sky-300/90 px-2.5 py-1 rounded-lg bg-sky-500/10 border border-sky-400/20 shrink-0">
-                  ⚡ Auto-connecting (No refresh needed)
-                </span>
-              </div>
-            </div>
-          </div>
         )}
 
         {/* Analysis Error Banner */}
@@ -390,11 +444,7 @@ export const App: React.FC = () => {
         {analyzedMedia && !isBatchMode && (
           <MediaBentoDashboard
             media={analyzedMedia}
-            onClearMedia={() => {
-              setUrl('');
-              setAnalyzedMedia(null);
-              setAnalysisError(null);
-            }}
+            onClearMedia={handleClear}
             onDownloadVideo={handleDownloadVideo}
             onDownloadAudio={handleDownloadAudio}
             onTrimMedia={handleTrimMedia}
