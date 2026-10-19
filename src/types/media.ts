@@ -135,6 +135,7 @@ export interface TrimRequest {
   format_id?: string;
   extract_audio?: boolean;
   audio_format?: 'mp3' | 'm4a' | 'wav' | 'flac';
+  audio_quality?: '320' | '256' | '192' | '128';
   custom_filename?: string;
 }
 
