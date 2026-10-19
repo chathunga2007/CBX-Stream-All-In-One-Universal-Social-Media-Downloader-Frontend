@@ -204,7 +204,7 @@ export function useDownloadManager() {
         title: meta.title,
         thumbnail: meta.thumbnail,
         platform: meta.platform,
-        formatLabel: `Trim (${req.start_time} - ${req.end_time})`,
+        formatLabel: meta.formatLabel || `Trim (${req.start_time} - ${req.end_time})`,
         status: 'completed',
         progressPercent: 100,
         downloadedFormatted: res.duration_formatted,
@@ -222,6 +222,34 @@ export function useDownloadManager() {
       setIsDrawerOpen(true);
       return taskId;
     } catch (err) {
+      // Automatic async fallback via background /download job with start_time & end_time
+      if (req.url) {
+        try {
+          console.warn('[Trim] Direct trim route encountered error, switching to background download task...');
+          const dlTaskId = await startDownloadTask(
+            {
+              url: req.url,
+              start_time: req.start_time,
+              end_time: req.end_time,
+              format_id: req.format_id || 'bestvideo+bestaudio/best',
+              extract_audio: req.extract_audio || false,
+              audio_format: (req.audio_format as any) || 'mp3',
+              audio_quality: (req.audio_quality as any) || '320',
+              custom_filename: req.custom_filename,
+            },
+            {
+              title: `${meta.title} (Clip ${req.start_time}-${req.end_time})`,
+              thumbnail: meta.thumbnail,
+              platform: meta.platform,
+              formatLabel: meta.formatLabel,
+            }
+          );
+          return dlTaskId;
+        } catch (fallbackErr) {
+          const msg = extractErrorMessage(err);
+          throw new Error(msg);
+        }
+      }
       const msg = extractErrorMessage(err);
       throw new Error(msg);
     }
