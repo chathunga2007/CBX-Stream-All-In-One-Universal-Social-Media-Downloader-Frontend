@@ -90,7 +90,9 @@ export const apiService = {
    * Precision trim video or audio between start and end timestamps.
    */
   async trimMedia(payload: TrimRequest): Promise<TrimResponse> {
-    const response = await apiClient.post<TrimResponse>('/trim', payload);
+    const response = await apiClient.post<TrimResponse>('/trim', payload, {
+      timeout: 180000, // 3 minutes timeout for FFmpeg clipping & downloading
+    });
     return response.data;
   },
 
