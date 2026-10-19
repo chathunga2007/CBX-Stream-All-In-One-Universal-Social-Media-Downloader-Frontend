@@ -186,6 +186,20 @@ export const PLATFORM_THEMES: Record<string, PlatformTheme> = {
     glow_color: 'rgba(0, 161, 214, 0.5)',
     text_color: '#FFFFFF',
   },
+  linkedin: {
+    id: 'linkedin',
+    name: 'LinkedIn',
+    icon: 'linkedin',
+    badge_text: 'LinkedIn HD Post / Video',
+    primary_color: '#0A66C2',
+    secondary_color: '#004182',
+    accent_color: '#70B5F9',
+    gradient_css: 'linear-gradient(135deg, rgba(10, 102, 194, 0.85) 0%, rgba(0, 65, 130, 0.65) 100%)',
+    glass_border: '1px solid rgba(10, 102, 194, 0.35)',
+    glass_shadow: '0 8px 32px 0 rgba(10, 102, 194, 0.25)',
+    glow_color: 'rgba(10, 102, 194, 0.5)',
+    text_color: '#FFFFFF',
+  },
   generic: {
     id: 'generic',
     name: 'Universal Media Stream',
@@ -219,6 +233,7 @@ const PATTERNS: [RegExp, string][] = [
   [/(?:https?:\/\/)?(?:www\.)?twitch\.tv\//i, 'twitch'],
   [/(?:https?:\/\/)?(?:www\.)?vimeo\.com\//i, 'vimeo'],
   [/(?:https?:\/\/)?(?:www\.)?bilibili\.com\/video\//i, 'bilibili'],
+  [/(?:https?:\/\/)?(?:www\.)?linkedin\.com\/(?:posts\/|feed\/update\/|learning\/|video\/|pulse\/)/i, 'linkedin'],
 ];
 
 /**
@@ -246,9 +261,10 @@ export const FEATURED_PLATFORMS = [
   { id: 'youtube', name: 'YouTube', color: '#FF0000', icon: 'youtube', sample: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
   { id: 'facebook', name: 'Facebook', color: '#1877F2', icon: 'facebook', sample: 'https://www.facebook.com/watch/?v=10153231379946729' },
   { id: 'twitter', name: 'X / Twitter', color: '#1DA1F2', icon: 'twitter', sample: 'https://twitter.com/captainamerica/status/719944021058060289' },
-  { id: 'soundcloud', name: 'SoundCloud', color: '#FF5500', icon: 'soundcloud', sample: 'http://soundcloud.com/ethmusic/lostin-powers-she-so-heavy' },
-  { id: 'pinterest', name: 'Pinterest', color: '#E60023', icon: 'pinterest', sample: 'https://pinterest.com/pin/dive-into-serenity-blue-lagoon-pedi-nails-for-a-tranquil-and-refreshing-spa-experience-video-in-2024--2885187256207927' },
+  { id: 'linkedin', name: 'LinkedIn', color: '#0A66C2', icon: 'linkedin', sample: 'https://www.linkedin.com/posts/activity-7176182855135248384' },
   { id: 'tiktok', name: 'TikTok', color: '#00F2FE', icon: 'tiktok', sample: 'https://www.tiktok.com/@tiktok/video/7106594312292453678' },
   { id: 'instagram', name: 'Instagram', color: '#E1306C', icon: 'instagram', sample: 'https://www.instagram.com/reel/C32sL3iL-4A/' },
+  { id: 'soundcloud', name: 'SoundCloud', color: '#FF5500', icon: 'soundcloud', sample: 'http://soundcloud.com/ethmusic/lostin-powers-she-so-heavy' },
+  { id: 'pinterest', name: 'Pinterest', color: '#E60023', icon: 'pinterest', sample: 'https://pinterest.com/pin/dive-into-serenity-blue-lagoon-pedi-nails-for-a-tranquil-and-refreshing-spa-experience-video-in-2024--2885187256207927' },
   { id: 'reddit', name: 'Reddit', color: '#FF4500', icon: 'reddit', sample: 'https://www.reddit.com/r/aww/comments/90bu6w/heat_index_was_110_degrees_so_we_offered_him_a/' },
 ];
