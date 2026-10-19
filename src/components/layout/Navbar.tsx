@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Download,
   Sparkles,
@@ -8,9 +8,10 @@ import {
   HardDrive,
   Palette,
   Check,
+  Zap,
+  Loader2,
 } from 'lucide-react';
-import { apiService } from '../../services/api';
-import { HealthResponse } from '../../types/media';
+import { UseBackendHealthReturn } from '../../hooks/useBackendHealth';
 
 interface NavbarProps {
   activeCount: number;
@@ -18,6 +19,7 @@ interface NavbarProps {
   onSelectTheme: (themeId: string) => void;
   onOpenQueue: () => void;
   onOpenCreator: () => void;
+  backendHealth: UseBackendHealthReturn;
 }
 
 const THEME_OPTIONS = [
@@ -40,9 +42,16 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectTheme,
   onOpenQueue,
   onOpenCreator,
+  backendHealth,
 }) => {
-  const [health, setHealth] = useState<HealthResponse | null>(null);
-  const [healthStatus, setHealthStatus] = useState<'checking' | 'healthy' | 'offline'>('checking');
+  const {
+    health,
+    status: healthStatus,
+    retryCount,
+    maxRetries,
+    wakeUp,
+  } = backendHealth;
+
   const [showHealthTooltip, setShowHealthTooltip] = useState(false);
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
 
@@ -57,30 +66,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     };
     document.addEventListener('mousedown', handleOutsideClick);
     return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-    const fetchHealth = async () => {
-      try {
-        const data = await apiService.getHealth();
-        if (isMounted) {
-          setHealth(data);
-          setHealthStatus(data.status === 'healthy' ? 'healthy' : 'checking');
-        }
-      } catch {
-        if (isMounted) {
-          setHealthStatus('offline');
-        }
-      }
-    };
-
-    fetchHealth();
-    const interval = setInterval(fetchHealth, 30000);
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
   }, []);
 
   const activeThemeObj = THEME_OPTIONS.find((t) => t.id === currentThemeId) || THEME_OPTIONS[0];
@@ -197,7 +182,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => setShowHealthTooltip(!showHealthTooltip)}
               onMouseEnter={() => setShowHealthTooltip(true)}
               onMouseLeave={() => setShowHealthTooltip(false)}
-              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium glass-pill hover:bg-white/[0.08] transition-colors focus:outline-none"
+              className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium glass-pill hover:bg-white/[0.08] transition-all focus:outline-none ${
+                healthStatus === 'waking'
+                  ? 'border-amber-400/50 bg-amber-500/10 shadow-[0_0_15px_rgba(245,158,11,0.25)]'
+                  : ''
+              }`}
               title="Backend Engine Health Status"
             >
               <span className="relative flex h-2 w-2">
@@ -207,8 +196,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                   </>
                 )}
+                {healthStatus === 'waking' && (
+                  <>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
+                  </>
+                )}
                 {healthStatus === 'checking' && (
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-400 animate-pulse" />
                 )}
                 {healthStatus === 'offline' && (
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500" />
@@ -217,6 +212,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <span className="hidden lg:inline text-white/80">
                 {healthStatus === 'healthy' && 'Engine Online'}
+                {healthStatus === 'waking' && `Waking Engine... (${retryCount}/${maxRetries})`}
                 {healthStatus === 'checking' && 'Connecting...'}
                 {healthStatus === 'offline' && 'Backend Offline'}
               </span>
@@ -224,7 +220,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Health Diagnostics Tooltip */}
             {showHealthTooltip && (
-              <div className="absolute right-0 top-full mt-2 w-64 p-3 rounded-2xl bg-obsidian-900/95 border border-white/15 text-xs text-white/90 z-50 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-150">
+              <div className="absolute right-0 top-full mt-2 w-72 p-3.5 rounded-2xl bg-obsidian-900/95 border border-white/15 text-xs text-white/90 z-50 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-150">
                 <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10">
                   <span className="font-semibold flex items-center gap-1.5 text-white">
                     <Activity className="w-3.5 h-3.5 text-indigo-400" />
@@ -234,14 +230,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className={`font-semibold uppercase tracking-wider text-[10px] px-1.5 py-0.5 rounded ${
                       healthStatus === 'healthy'
                         ? 'bg-emerald-500/20 text-emerald-400'
+                        : healthStatus === 'waking'
+                        ? 'bg-amber-500/20 text-amber-300 animate-pulse'
+                        : healthStatus === 'checking'
+                        ? 'bg-sky-500/20 text-sky-300'
                         : 'bg-rose-500/20 text-rose-400'
                     }`}
                   >
-                    {healthStatus}
+                    {healthStatus === 'waking' ? 'WAKING UP' : healthStatus}
                   </span>
                 </div>
 
-                {health ? (
+                {healthStatus === 'healthy' && health && (
                   <div className="space-y-1.5 text-white/70">
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-1">
@@ -268,10 +268,51 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <span>v{health.version}</span>
                     </div>
                   </div>
-                ) : (
-                  <div className="text-white/60 flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Backend is starting or unreachable at port 8000.</span>
+                )}
+
+                {healthStatus === 'waking' && (
+                  <div className="space-y-2.5 text-white/80">
+                    <div className="flex items-start gap-2">
+                      <Zap className="w-4 h-4 text-amber-400 shrink-0 mt-0.5 animate-bounce" />
+                      <div>
+                        <div className="font-semibold text-white">Cold Start in Progress</div>
+                        <div className="text-[11px] text-white/60 leading-tight mt-0.5">
+                          Cloud container is spinning up from idle sleep. Auto-connecting (Attempt {retryCount}/{maxRetries}).
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+                      <div
+                        className="bg-gradient-to-r from-amber-400 to-indigo-400 h-full transition-all duration-300"
+                        style={{ width: `${Math.min(100, Math.max(10, (retryCount / maxRetries) * 100))}%` }}
+                      />
+                    </div>
+                    <div className="text-[10px] text-sky-300/90 flex items-center gap-1 font-medium">
+                      <span>✨ Auto-connecting — no page refresh needed!</span>
+                    </div>
+                  </div>
+                )}
+
+                {healthStatus === 'offline' && (
+                  <div className="space-y-2 text-white/70">
+                    <div className="flex items-center gap-2 text-rose-300">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                      <span>Server is unreachable or sleeping.</span>
+                    </div>
+                    <button
+                      onClick={() => wakeUp()}
+                      className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-400/40 text-indigo-200 text-xs font-semibold transition-all shadow-glow-sm cursor-pointer"
+                    >
+                      <Zap className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Wake Server Now</span>
+                    </button>
+                  </div>
+                )}
+
+                {healthStatus === 'checking' && (
+                  <div className="flex items-center gap-2 text-white/60 py-1">
+                    <Loader2 className="w-4 h-4 text-sky-400 animate-spin shrink-0" />
+                    <span>Checking backend availability...</span>
                   </div>
                 )}
               </div>
