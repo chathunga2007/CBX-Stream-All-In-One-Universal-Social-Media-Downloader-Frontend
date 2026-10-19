@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Film, Music, Scissors, Archive, RotateCcw } from 'lucide-react';
 import { MediaAnalyzeResponse } from '../../types/media';
@@ -24,6 +24,8 @@ interface MediaBentoDashboardProps {
     endTime: string,
     extractAudio: boolean,
     audioFormat: 'mp3' | 'm4a' | 'wav' | 'flac',
+    formatId?: string,
+    audioQuality?: '320' | '256' | '192' | '128',
     customFilename?: string
   ) => void;
   onDownloadCarouselZip: (selectedUrls: string[], customFilename?: string) => void;
@@ -86,10 +88,10 @@ export const MediaBentoDashboard: React.FC<MediaBentoDashboardProps> = ({
       className="w-full max-w-6xl mx-auto px-4 mt-6 sm:mt-8"
     >
       {/* Top Session Bar with Platform Status & Clear Action */}
-      <div className="flex items-center justify-between mb-3 px-1">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 mb-3 px-1">
         <div className="flex items-center gap-2 text-xs">
           <span
-            className="w-2.5 h-2.5 rounded-full animate-ping"
+            className="w-2.5 h-2.5 rounded-full animate-ping shrink-0"
             style={{ backgroundColor: media.platform.primary_color }}
           />
           <span className="text-white font-bold tracking-wide">Active Stream Extraction</span>
@@ -108,7 +110,7 @@ export const MediaBentoDashboard: React.FC<MediaBentoDashboardProps> = ({
 
         <button
           onClick={onClearMedia}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-pill hover:bg-rose-500/20 text-white/70 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 text-xs font-semibold transition-all focus:outline-none hover:scale-105"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-pill hover:bg-rose-500/20 text-white/70 hover:text-rose-300 border border-white/10 hover:border-rose-500/30 text-xs font-semibold transition-all focus:outline-none active:scale-95 sm:hover:scale-105"
           title="Dismiss current stream and reset input"
         >
           <RotateCcw className="w-3.5 h-3.5" />
