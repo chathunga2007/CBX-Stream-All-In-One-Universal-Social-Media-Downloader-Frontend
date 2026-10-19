@@ -1,4 +1,4 @@
-﻿<p align="center">
+<p align="center">
   <img src="public/Neon%20CBX-Stream%20Downloader%20Splash%20Poster.png" alt="CBX-Stream Downloader Poster" width="100%" />
 </p>
 
@@ -55,11 +55,20 @@
 2. **Studio Audio Transcoder**:
    - Guaranteed universal **`.mp3`** format (320kbps & 192kbps).
    - High-fidelity ID3v2 metadata embedding with album cover art directly baked into the MP3 tags.
-3. **Precision Keyframe Trimmer**:
-   - Interactive sub-second clipping with instant start and end timestamp pickers for high-speed custom cut generation.
+3. **Precision Keyframe Trimmer & Dual Export Engine**:
+   - Interactive sub-second clipping with visual timeline gradient scrubber and quick jump presets (Story 15s, Shorts/Reels 30s, TikTok 60s, Hook).
+   - **Dual Export Modes**:
+     - **Video (.MP4)**: Trim high-definition clips with selectable resolution profiles (Max Auto DASH, 1080p, 720p, 480p).
+     - **Audio Only**: Extract clipped audio in MP3, M4A, WAV, or FLAC with master bitrates (320kbps, 256kbps, 192kbps, 128kbps).
+   - **Fault-Tolerant Processing**: Automatic asynchronous task fallback with SSE progress tracking ensures long clips never fail or time out.
 4. **Carousel & Gallery ZIP Packager**:
    - Automatically detects multi-slide Instagram carousels, Pinterest boards, and Reddit galleries.
    - Bundles all high-res photos and videos into a single downloadable ZIP package.
+
+### ⚡ Intelligent Cloud Engine Wake Synchronization
+- Seamless handling of cloud backend cold starts (idle sleep wake-up).
+- Allows instant link pasting anytime, queuing the request and automatically analyzing the exact millisecond the backend engine verifies online.
+- Ultra-responsive mobile performance with hardware-accelerated ambient glows, eliminating lag on legacy devices.
 
 ### 📡 Live WebSocket Telemetry & Celebratory Confetti
 - Connects directly to `wss://cbx-stream-backend.fly.dev` for 60fps liquid glass progress animations, download speed (MB/s), downloaded bytes, and dynamic ETA counters.
