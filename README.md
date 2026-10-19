@@ -1,146 +1,292 @@
-# ⚡ CBX-Stream Universal Social Media Downloader — Frontend
+﻿<p align="center">
+  <img src="public/Neon%20CBX-Stream%20Downloader%20Splash%20Poster.png" alt="CBX-Stream Downloader Poster" width="100%" />
+</p>
 
-> **State-of-the-Art, Glassmorphic Web Client for Universal Social Media Archiving & Streaming**  
-> Architected by **Chathunga Bimsara** (Institute of Software Engineering - IJSE).  
-> Designed to integrate 100% seamlessly with `CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Backend`.
+<p align="center">
+  <img src="public/Neon-Glass-Play-Emblem-Logo.png" alt="CBX-Stream Logo" width="110" />
+</p>
 
----
+<h1 align="center">⚡ CBX-Stream Universal Social Media Downloader</h1>
 
-## 🌟 Visual & Architectural Highlights
+<p align="center">
+  <strong>Next-Generation Chameleon Glassmorphic Web Client for Universal 4K/8K Media Streaming, Trimming & Archiving</strong><br>
+  <em>Engineered & Architected by <strong>Chathunga Bimsara (CBX)</strong> — Institute of Software Engineering (IJSE)</em>
+</p>
 
-- **Chameleon Glass UI Engine**:
-  - Dynamically extracts and shifts CSS custom properties (`--cbx-primary`, `--cbx-secondary`, `--cbx-glow`, `--cbx-gradient`) in real-time as users type or analyze YouTube (Red), TikTok (Cyan/Pink), Instagram (Magenta/Orange), Twitter/X (Sky Blue), Reddit (Orange), Spotify (Emerald), Twitch (Purple), and 1,000+ streaming sites.
-- **Deep Obsidian Backdrop & Aurora Mesh Blobs**:
-  - High-performance GPU-accelerated animated aurora blobs float seamlessly behind a 20px frosted glass aesthetic.
-- **Media Bento Grid Dashboard**:
-  - Left Column: Proxied HD/4K preview, uploader handle, duration, view count, like count, and one-click metadata copier.
-  - Right Column (4 Action Tabs):
-    1. **Video Streams**: 4K Ultra HD, 2K, 1080p, 720p profiles with DASH audio merging indicators and custom filenames.
-    2. **Studio Audio Transcoder**: 320kbps MP3, 192kbps MP3, M4A, Lossless WAV with ID3v2 tag and cover art embedding.
-    3. **Precision Keyframe Clipper**: Sub-second start/end timestamp trimmer for MP4 clips or extracted MP3 audio.
-    4. **Carousel & Gallery Bundler**: Multi-photo/video slide selector with instant ZIP package compiler.
-- **Live WebSocket Telemetry**:
-  - Connects to `/ws/progress/{task_id}` for 60fps liquid glass progress bars, download speed (MB/s), downloaded bytes, and ETA.
-- **Slide-Over Download Queue Drawer**:
-  - Manages active download threads and persistent completed history with subtle celebratory confetti (`canvas-confetti`).
-- **Batch / Playlist Mode**:
-  - Concurrently analyzes up to 50 URLs or entire playlists with multi-select queueing.
-- **Architect Spotlight Modal**:
-  - Interactive profile highlighting **Chathunga Bimsara**, IJSE background, technical skills, and social links.
+<p align="center">
+  <a href="https://github.com/chathunga2007/CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Frontend/stargazers"><img src="https://img.shields.io/github/stars/chathunga2007/CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Frontend?color=6366f1&style=for-the-badge&logo=github" alt="Stars" /></a>
+  <a href="https://github.com/chathunga2007/CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Frontend/network/members"><img src="https://img.shields.io/github/forks/chathunga2007/CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Frontend?color=ec4899&style=for-the-badge&logo=github" alt="Forks" /></a>
+  <a href="https://cbx-stream-backend.fly.dev"><img src="https://img.shields.io/badge/Fly.io_Backend-Online-24185b?style=for-the-badge&logo=flydotio&logoColor=white" alt="Backend Live" /></a>
+  <a href="https://vercel.com"><img src="https://img.shields.io/badge/Deploy-Vercel-black?style=for-the-badge&logo=vercel" alt="Vercel Ready" /></a>
+  <a href="https://react.dev"><img src="https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 18" /></a>
+  <a href="https://vitejs.dev"><img src="https://img.shields.io/badge/Vite-5.4-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.6-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
+  <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/TailwindCSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="TailwindCSS" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="License: MIT" /></a>
+</p>
 
 ---
 
-## 🛠️ Tech Stack
+## 🌐 Live Production Endpoints
 
-- **Framework**: React 18 + TypeScript + Vite
-- **Styling**: TailwindCSS (Obsidian & Chameleon palettes) + PostCSS + Autoprefixer
-- **Motion & Transitions**: Framer Motion
-- **Icons**: Lucide React
-- **Network**: Axios + Native WebSockets
-- **Feedback**: Canvas Confetti
-- **Class Merging**: clsx + tailwind-merge
+| Component | Platform | Status | URL |
+| :--- | :--- | :--- | :--- |
+| **Frontend Web App** | Vercel | 🚀 Production Ready | Configured for Vercel Deployment |
+| **Backend REST & WS Engine** | Fly.io | 🟢 Active & Healthy | [https://cbx-stream-backend.fly.dev](https://cbx-stream-backend.fly.dev) |
+| **Interactive API Docs** | FastAPI Swagger | 📘 Online | [https://cbx-stream-backend.fly.dev/docs](https://cbx-stream-backend.fly.dev/docs) |
+| **Backend Health Check** | FastAPI / Docker | 🩺 200 OK | [https://cbx-stream-backend.fly.dev/api/v1/health](https://cbx-stream-backend.fly.dev/api/v1/health) |
 
 ---
 
-## 📁 Directory Structure
+## ✨ Visual & Architectural Highlights
 
-```text
-CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Frontend/
-├── public/
-│   └── favicon.svg                  # Holographic CBX neon shield favicon
-├── src/
-│   ├── main.tsx                     # React 18 root entry point
-│   ├── App.tsx                      # Master app orchestrator
-│   ├── index.css                    # Frosted glass utilities & dynamic variables
-│   ├── types/
-│   │   └── media.ts                 # TypeScript schemas matching FastAPI Backend 1:1
-│   ├── config/
-│   │   ├── env.ts                   # API, WebSocket, and Reverse Proxy URL resolvers
-│   │   ├── platforms.ts             # Instant client-side platform & color theme detector
-│   │   └── creator.ts               # Official developer bio for Chathunga Bimsara
-│   ├── services/
-│   │   ├── api.ts                   # Axios service for analyze, batch, download, trim, ZIP, health
-│   │   └── ws.ts                    # Resilient WebSocket progress listener with keepalive ping
-│   ├── hooks/
-│   │   ├── useChameleonTheme.ts     # Dynamic CSS variable injector
-│   │   ├── useDownloadManager.ts    # Download state, WebSocket hooks, localStorage & confetti
-│   │   └── useClipboardDetect.ts    # One-click smart clipboard URL detector
-│   ├── components/
-│   │   ├── layout/
-│   │   │   ├── AmbientBackground.tsx# Deep obsidian canvas with animated Chameleon Aurora
-│   │   │   ├── Navbar.tsx           # Glass header with live FastAPI health check pill
-│   │   │   └── Footer.tsx           # Credits to Chathunga Bimsara & IJSE credentials
-│   │   ├── hero/
-│   │   │   ├── HeroSection.tsx      # Animated typography & interactive platform pills
-│   │   │   └── SpotlightCommandBar.tsx # Frosted glass URL input bar with Smart Paste
-│   │   ├── media/
-│   │   │   ├── MediaBentoDashboard.tsx # Bento layout coordinating preview & action tabs
-│   │   │   ├── MediaPreviewCard.tsx # Proxied HD thumbnail, uploader & stats
-│   │   │   ├── VideoFormatsTab.tsx  # 4K/2K/1080p/720p/480p quality selector cards
-│   │   │   ├── AudioFormatsTab.tsx  # Studio 320kbps MP3 + ID3 cover art embedder
-│   │   │   ├── VideoTrimmerTab.tsx  # Precision start/end timestamp clipper
-│   │   │   └── CarouselGalleryTab.tsx# Multi-slide album selector & ZIP packager
-│   │   ├── batch/
-│   │   │   └── BatchPlaylistView.tsx# 50-URL queue & playlist downloader
-│   │   ├── progress/
-│   │   │   ├── ActiveDownloadCard.tsx# Liquid glass progress bar with speed & ETA
-│   │   │   └── DownloadQueueDrawer.tsx # Slide-over active & history manager
-│   │   └── creator/
-│   │       └── CreatorSpotlightModal.tsx # "Meet the Architect" interactive modal
-├── .env.example
-├── .env
-├── .gitignore
-├── vercel.json
-├── tailwind.config.js
-├── tsconfig.json
-├── package.json
-└── README.md
+### 🎨 Chameleon Dynamic Theming Engine
+- Real-time reactive theme shifts adapting seamlessly across **YouTube** (Crimson Red), **TikTok** (Cyan/Pink Neon), **Instagram** (Sunset Gradient), **Twitter / X** (Sky Blue), **Reddit** (Vibrant Orange), **Spotify** (Emerald Green), **Twitch** (Purple Neon), and 1,000+ universal streaming platforms.
+- Dynamic CSS token injection (`--cbx-primary`, `--cbx-secondary`, `--cbx-glow`, `--cbx-gradient`) powers animated background ambient aurora mesh blobs.
+
+### ⚡ Instant Auto-Analysis on Paste & Input
+- No manual clicking required. Pasting any supported video link automatically triggers instant URL validation, botguard bypass, and rich metadata extraction.
+
+### 🖼️ Smart Dual-Layer Ambient Glow Bento Dashboard
+- **Ambient Glow Backdrop**: Dynamic blurred layer beneath the media thumbnail creates a luxurious, theater-like ambient immersion.
+- **Single-Stream Hero Mode**: Streamlined, unified layout providing instant media insights without visual clutter.
+- **Non-Truncating Glass Action Tabs**: Clean, fully responsive tab navigation across mobile, tablet, and ultra-wide displays.
+
+### 🎬 Four-Pillar Bento Action Tabs
+1. **Universal MP4 Video Engine**:
+   - 4K Ultra HD (2160p), 2K (1440p), 1080p Full HD, 720p HD profiles.
+   - **Guaranteed Universal MP4**: yt-dlp DASH merging + automatic FFmpeg fast remuxing into standard `.mp4` container with universal AAC audio. No WebM compatibility issues.
+2. **Studio Audio Transcoder**:
+   - Guaranteed universal **`.mp3`** format (320kbps & 192kbps).
+   - High-fidelity ID3v2 metadata embedding with album cover art directly baked into the MP3 tags.
+3. **Precision Keyframe Trimmer**:
+   - Interactive sub-second clipping with instant start and end timestamp pickers for high-speed custom cut generation.
+4. **Carousel & Gallery ZIP Packager**:
+   - Automatically detects multi-slide Instagram carousels, Pinterest boards, and Reddit galleries.
+   - Bundles all high-res photos and videos into a single downloadable ZIP package.
+
+### 📡 Live WebSocket Telemetry & Celebratory Confetti
+- Connects directly to `wss://cbx-stream-backend.fly.dev` for 60fps liquid glass progress animations, download speed (MB/s), downloaded bytes, and dynamic ETA counters.
+- Triggers celebratory particle confetti upon successful completion.
+
+### 📂 Slide-Over Download Queue Drawer
+- Persistent local history and active download queue management with instant one-click re-download options.
+
+---
+
+## 🛠️ Tech Stack & Libraries
+
+| Technology | Purpose |
+| :--- | :--- |
+| **React 18** | High-performance reactive UI framework |
+| **TypeScript 5.6** | Strict type safety aligned 1:1 with backend schemas |
+| **Vite 5.4** | Ultra-fast build tool and lightning HMR dev server |
+| **TailwindCSS 3.4** | Custom obsidian glassmorphism & chameleon design system |
+| **Framer Motion 11** | Smooth GPU-accelerated micro-interactions and transitions |
+| **Lucide React** | Sleek, modern iconography |
+| **Axios** | Robust HTTP client for REST endpoints |
+| **Canvas Confetti** | Celebratory animations on task completion |
+| **Vercel** | Edge network hosting & automatic continuous deployments |
+
+---
+
+## 🚀 How to Host on Vercel (Step-by-Step Guide)
+
+Hosting CBX-Stream Frontend on Vercel is completely free and takes less than 2 minutes:
+
+### Option 1: Via Vercel Web Dashboard (Recommended)
+
+1. **Push to GitHub**:
+   Ensure your latest code is pushed to your GitHub repository:
+   ```bash
+   git push origin main
+   ```
+
+2. **Log in to Vercel**:
+   Go to [https://vercel.com](https://vercel.com) and sign in with your GitHub account.
+
+3. **Import Project**:
+   - Click **"Add New..."** → **"Project"**.
+   - Select your frontend repository: `CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Frontend`.
+   - Click **"Import"**.
+
+4. **Configure Project Settings**:
+   - **Framework Preset**: `Vite` (Vercel automatically detects this).
+   - **Root Directory**: `./` (leave default).
+   - **Build Command**: `npm run build` (or `tsc && vite build`).
+   - **Output Directory**: `dist`.
+   - **Install Command**: `npm install`.
+
+5. **Set Environment Variables**:
+   Under **"Environment Variables"**, add the following keys:
+   | Key | Value | Description |
+   | :--- | :--- | :--- |
+   | `VITE_API_BASE_URL` | `https://cbx-stream-backend.fly.dev/api/v1` | Live Fly.io Backend REST API |
+   | `VITE_WS_BASE_URL` | `wss://cbx-stream-backend.fly.dev` | Live Fly.io WebSocket Gateway |
+
+6. **Deploy**:
+   - Click **"Deploy"**.
+   - Within 30–45 seconds, your site is live with a free global SSL domain (e.g. `cbx-stream-frontend.vercel.app`)!
+
+---
+
+### Option 2: Via Vercel CLI
+
+If you prefer deploying via terminal:
+
+```bash
+# 1. Run Vercel CLI via npx
+npx vercel
+
+# 2. Follow prompts:
+# ? Set up and deploy? [Y/n] y
+# ? Which scope? (Select your account)
+# ? Link to existing project? [y/N] n
+# ? What's your project's name? cbx-stream-frontend
+# ? In which directory is your code located? ./
+
+# 3. Add Environment Variables
+npx vercel env add VITE_API_BASE_URL production
+# Enter: https://cbx-stream-backend.fly.dev/api/v1
+
+npx vercel env add VITE_WS_BASE_URL production
+# Enter: wss://cbx-stream-backend.fly.dev
+
+# 4. Deploy to Production
+npx vercel --prod
 ```
 
+> [!NOTE]
+> The included `vercel.json` already contains single-page application (SPA) rewrite rules so direct routing and refreshes work flawlessly:
+> ```json
+> {
+>   "rewrites": [
+>     { "source": "/(.*)", "destination": "/index.html" }
+>   ]
+> }
+> ```
+
 ---
 
-## 🚀 Quick Start Guide
+## 💻 Local Development Setup
 
 ### 1. Prerequisites
-- **Node.js 18+** or **Node.js 20+**
-- **npm** or **pnpm** or **yarn**
-- Running instance of `CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Backend` (port `8000`)
+- **Node.js**: v18.x or v20.x+
+- **npm** (or pnpm / yarn)
+- Backend engine running locally or on Fly.io
 
-### 2. Install Dependencies
+### 2. Installation
 ```bash
+# Clone the repository
+git clone https://github.com/chathunga2007/CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Frontend.git
+
+# Navigate to folder
+cd CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Frontend
+
+# Install dependencies
 npm install
 ```
 
 ### 3. Environment Configuration
-Verify `.env` points to your backend instance:
+Create a `.env` file (or copy `.env.example`):
 ```env
-VITE_API_BASE_URL=http://localhost:8000/api/v1
-VITE_WS_BASE_URL=ws://localhost:8000
+# Point to live Fly.io cloud backend
+VITE_API_BASE_URL=https://cbx-stream-backend.fly.dev/api/v1
+VITE_WS_BASE_URL=wss://cbx-stream-backend.fly.dev
+
+# Or local backend if running locally:
+# VITE_API_BASE_URL=http://localhost:8000/api/v1
+# VITE_WS_BASE_URL=ws://localhost:8000
 ```
 
 ### 4. Start Development Server
 ```bash
 npm run dev
 ```
-Open **http://localhost:5173** in your browser.
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-### 5. Build for Production
+### 5. Production Build Test
 ```bash
 npm run build
 ```
-Generates an optimized, tree-shaken static production bundle in `dist/`.
+Builds an optimized, production-ready static bundle inside the `dist/` directory.
+
+---
+
+## 📁 Repository Structure
+
+```text
+CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Frontend/
+├── public/
+│   ├── Neon CBX-Stream Downloader Splash Poster.png  # High-resolution splash poster
+│   ├── Neon-Glass-Play-Emblem-Logo.png               # Glowing neon glass emblem
+│   └── favicon.svg                                   # Cyber shield browser favicon
+├── src/
+│   ├── main.tsx                                      # React entry point
+│   ├── App.tsx                                       # Master application orchestrator
+│   ├── index.css                                     # Frosted glass utilities & dynamic theme CSS
+│   ├── types/
+│   │   └── media.ts                                  # Complete TypeScript interfaces
+│   ├── config/
+│   │   ├── env.ts                                    # Dynamic API/WS resolver
+│   │   ├── platforms.ts                              # Client platform detector & themes
+│   │   └── creator.ts                                # Architect metadata
+│   ├── services/
+│   │   ├── api.ts                                    # Axios service for analyze, download, trimmer
+│   │   └── ws.ts                                     # Resilient WebSocket progress client
+│   ├── hooks/
+│   │   ├── useChameleonTheme.ts                      # Dynamic CSS variable injector
+│   │   ├── useDownloadManager.ts                     # Download lifecycle & history state
+│   │   └── useClipboardDetect.ts                     # Smart clipboard paste detector
+│   └── components/
+│       ├── layout/
+│       │   ├── AmbientBackground.tsx                 # Animated aurora canvas mesh
+│       │   ├── Navbar.tsx                            # Glass header with live backend status
+│       │   └── Footer.tsx                            # Architectural signature & credits
+│       ├── hero/
+│       │   ├── HeroSection.tsx                       # Animated typography & badges
+│       │   └── SpotlightCommandBar.tsx               # Instant auto-analysis search bar
+│       ├── media/
+│       │   ├── MediaBentoDashboard.tsx               # Bento grid layout orchestrator
+│       │   ├── MediaPreviewCard.tsx                  # Dual-layer ambient glow preview card
+│       │   ├── VideoFormatsTab.tsx                   # 4K/2K/1080p MP4 quality selector
+│       │   ├── AudioFormatsTab.tsx                   # Studio 320kbps MP3 transcoder
+│       │   ├── VideoTrimmerTab.tsx                   # Precision keyframe trimmer
+│       │   └── CarouselGalleryTab.tsx                # Album selector & ZIP packager
+│       ├── batch/
+│       │   └── BatchPlaylistView.tsx                 # Multi-URL batch downloader
+│       ├── progress/
+│       │   ├── ActiveDownloadCard.tsx                # Liquid glass progress card
+│       │   └── DownloadQueueDrawer.tsx               # Slide-over queue drawer
+│       └── creator/
+│           └── CreatorSpotlightModal.tsx             # Interactive architect profile modal
+├── .env.example                                      # Environment variable template
+├── .env                                              # Local environment configuration
+├── index.html                                        # HTML5 entry with meta tags & SEO
+├── package.json                                      # Project dependencies & build scripts
+├── tailwind.config.js                                # Obsidian glass color palettes
+├── tsconfig.json                                     # TypeScript compiler configuration
+├── vercel.json                                       # Vercel SPA rewrite routing rules
+└── README.md                                         # Project documentation
+```
 
 ---
 
 ## 👨‍💻 Architect & Credits
 
-Architected and developed with precision by **Chathunga Bimsara (CBX)**:
+<p align="center">
+  <img src="public/Neon-Glass-Play-Emblem-Logo.png" alt="Chathunga Bimsara Emblem" width="90" />
+</p>
+
+Architected and developed with dedication by **Chathunga Bimsara (CBX)**:
 - **Institution**: Institute of Software Engineering (IJSE)
-- **Role**: Software Architect & Distributed Systems Engineer
-- **GitHub**: [@chathungabimsara](https://github.com/chathungabimsara)
-- **LinkedIn**: [Chathunga Bimsara](https://linkedin.com/in/chathunga-bimsara)
+- **Role**: Full-Stack Software Engineer & Distributed Systems Architect
+- **GitHub**: [@chathunga2007](https://github.com/chathunga2007)
+- **Project Repository**: [CBX-Stream Frontend](https://github.com/chathunga2007/CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Frontend)
+- **Backend Repository**: [CBX-Stream Backend](https://github.com/chathunga2007/CBX-Stream-All-In-One-Universal-Social-Media-Downloader-Backend)
 
 ---
 
 ## 📄 License
-This project is licensed under the MIT License.
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
