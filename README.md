@@ -126,8 +126,8 @@ Hosting CBX-Stream Frontend on Vercel is completely free and takes less than 2 m
    Under **"Environment Variables"**, add the following keys:
    | Key | Value | Description |
    | :--- | :--- | :--- |
-   | `VITE_API_BASE_URL` | `https://cbx-stream-backend.fly.dev/api/v1` | Live Fly.io Backend REST API |
-   | `VITE_WS_BASE_URL` | `wss://cbx-stream-backend.fly.dev` | Live Fly.io WebSocket Gateway |
+   | `VITE_API_BASE_URL` | `YOUR_API_URL` | Live Fly.io Backend REST API |
+   | `VITE_WS_BASE_URL` | `YOUR_WS_URL` | Live Fly.io WebSocket Gateway |
 
 6. **Deploy**:
    - Click **"Deploy"**.
@@ -196,12 +196,12 @@ npm install
 Create a `.env` file (or copy `.env.example`):
 ```env
 # Point to live Fly.io cloud backend
-VITE_API_BASE_URL=https://cbx-stream-backend.fly.dev/api/v1
-VITE_WS_BASE_URL=wss://cbx-stream-backend.fly.dev
+VITE_API_BASE_URL=YOUR_API_URL
+VITE_WS_BASE_URL=YOUR_WS_URL
 
 # Or local backend if running locally:
-# VITE_API_BASE_URL=http://localhost:8000/api/v1
-# VITE_WS_BASE_URL=ws://localhost:8000
+# VITE_API_BASE_URL=YOUR_API_URL
+# VITE_WS_BASE_URL=YOUR_WS_URL
 ```
 
 ### 4. Start Development Server
