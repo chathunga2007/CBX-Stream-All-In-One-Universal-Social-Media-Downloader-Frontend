@@ -1,13 +1,14 @@
-import React from 'react';
+﻿import React from 'react';
 import { Search, Clipboard, X, Layers, ArrowRight, Loader2 } from 'lucide-react';
 import { PlatformTheme } from '../../types/media';
+import { isValidMediaUrl } from '../../config/platforms';
 
 interface SpotlightCommandBarProps {
   url: string;
   setUrl: (url: string) => void;
   detectedPlatform: PlatformTheme;
   isAnalyzing: boolean;
-  onAnalyze: () => void;
+  onAnalyze: (overrideUrl?: string) => void;
   isBatchMode: boolean;
   onToggleBatchMode: () => void;
   onSmartPaste: () => void;
@@ -29,13 +30,24 @@ export const SpotlightCommandBar: React.FC<SpotlightCommandBarProps> = ({
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pasted = e.clipboardData.getData('text');
+    if (pasted && pasted.trim()) {
+      const clean = pasted.trim();
+      setUrl(clean);
+      if (isValidMediaUrl(clean)) {
+        onAnalyze(clean);
+      }
+    }
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4 mt-6">
       {/* Mode Switch & Header Pills */}
       <div className="flex items-center justify-between mb-3 px-1 text-xs">
         {/* Detected Platform Tag */}
         <div className="flex items-center gap-2">
-          <span className="text-white/40">Engine Target:</span>
+          <span className="text-white/40">Target Engine:</span>
           <span
             className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-semibold text-[11px] border shadow-sm transition-all"
             style={{
@@ -86,7 +98,8 @@ export const SpotlightCommandBar: React.FC<SpotlightCommandBarProps> = ({
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Paste video, reel, song, or album URL (e.g. YouTube, TikTok, IG, X, Reddit)..."
+            onPaste={handlePaste}
+            placeholder="Paste video, reel, post, music, or playlist URL (YouTube, TikTok, IG, X, Reddit)..."
             disabled={isAnalyzing}
             className="flex-1 bg-transparent py-3 px-2 text-sm sm:text-base text-white placeholder-white/35 focus:outline-none selection:bg-indigo-500/40"
             autoFocus
@@ -111,7 +124,7 @@ export const SpotlightCommandBar: React.FC<SpotlightCommandBarProps> = ({
               onClick={onSmartPaste}
               disabled={isAnalyzing}
               className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl glass-pill hover:bg-white/[0.1] text-xs font-medium text-white/80 transition-all focus:outline-none"
-              title="Paste from clipboard"
+              title="Paste from clipboard & auto-analyze"
             >
               <Clipboard className="w-3.5 h-3.5 text-indigo-400" />
               <span className="hidden sm:inline">Paste</span>
@@ -119,7 +132,7 @@ export const SpotlightCommandBar: React.FC<SpotlightCommandBarProps> = ({
 
             {/* Main CTA Submit Button */}
             <button
-              onClick={onAnalyze}
+              onClick={() => onAnalyze()}
               disabled={isAnalyzing || url.trim().length < 3}
               className="btn-chameleon flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
             >
