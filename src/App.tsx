@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { AmbientBackground } from './components/layout/AmbientBackground';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
@@ -11,7 +11,7 @@ import { CreatorSpotlightModal } from './components/creator/CreatorSpotlightModa
 import { useChameleonTheme } from './hooks/useChameleonTheme';
 import { useDownloadManager } from './hooks/useDownloadManager';
 import { useClipboardDetect } from './hooks/useClipboardDetect';
-import { detectClientPlatform } from './config/platforms';
+import { detectClientPlatform, isValidMediaUrl, PLATFORM_THEMES } from './config/platforms';
 import { apiService, extractErrorMessage } from './services/api';
 import { MediaAnalyzeResponse } from './types/media';
 import { AlertCircle, RefreshCw } from 'lucide-react';
@@ -59,36 +59,68 @@ export const App: React.FC = () => {
   }, [analyzedMedia, updateTheme]);
 
   /**
-   * Main analyze submission handler
+   * Main analyze submission handler (supports URL override for instant auto-analysis)
    */
-  const handleAnalyze = async () => {
-    const targetUrl = url.trim();
-    if (!targetUrl || targetUrl.length < 3) return;
+  const handleAnalyze = useCallback(
+    async (overrideUrl?: string) => {
+      const targetUrl = (overrideUrl || url).trim();
+      if (!targetUrl || targetUrl.length < 5 || isAnalyzing) return;
 
-    setIsAnalyzing(true);
-    setAnalysisError(null);
+      // Avoid re-analyzing if this exact URL is already loaded
+      if (analyzedMedia && analyzedMedia.url === targetUrl) {
+        return;
+      }
 
-    try {
-      const result = await apiService.analyzeUrl(targetUrl);
-      setAnalyzedMedia(result);
-    } catch (err) {
-      setAnalysisError(extractErrorMessage(err));
-      setAnalyzedMedia(null);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
+      setIsAnalyzing(true);
+      setAnalysisError(null);
+
+      try {
+        const result = await apiService.analyzeUrl(targetUrl);
+        setAnalyzedMedia(result);
+      } catch (err) {
+        setAnalysisError(extractErrorMessage(err));
+        setAnalyzedMedia(null);
+      } finally {
+        setIsAnalyzing(false);
+      }
+    },
+    [url, isAnalyzing, analyzedMedia]
+  );
 
   /**
    * Smart paste from clipboard and auto-analyze
    */
   const handleSmartPaste = async () => {
     const text = await pasteClipboard();
-    if (text) {
-      setUrl(text);
+    if (text && text.trim()) {
+      const clean = text.trim();
+      setUrl(clean);
       setAnalysisError(null);
+      if (isValidMediaUrl(clean)) {
+        handleAnalyze(clean);
+      }
     }
   };
+
+  /**
+   * Auto-analyze when user enters or pastes a valid media URL (with 600ms debounce)
+   */
+  useEffect(() => {
+    const trimmed = url.trim();
+    if (!trimmed || isAnalyzing || isBatchMode) return;
+
+    if (isValidMediaUrl(trimmed)) {
+      if (analyzedMedia && analyzedMedia.url === trimmed) {
+        return;
+      }
+
+      const timer = setTimeout(() => {
+        handleAnalyze(trimmed);
+      }, 600);
+
+      return () => clearTimeout(timer);
+    }
+  }, [url, isAnalyzing, isBatchMode, analyzedMedia, handleAnalyze]);
 
   /**
    * Quick select sample platform link from hero badges
@@ -96,6 +128,9 @@ export const App: React.FC = () => {
   const handleSelectPlatformSample = (sampleUrl: string) => {
     setUrl(sampleUrl);
     setAnalysisError(null);
+    if (isValidMediaUrl(sampleUrl)) {
+      handleAnalyze(sampleUrl);
+    }
   };
 
   /**
@@ -255,13 +290,18 @@ export const App: React.FC = () => {
       {/* Top Sticky Glass Navigation */}
       <Navbar
         activeCount={activeDownloads.filter((t) => t.status !== 'completed' && t.status !== 'failed').length}
+        currentThemeId={detectedPlatform.id}
+        onSelectTheme={(themeId) => {
+          const theme = PLATFORM_THEMES[themeId];
+          if (theme) updateTheme(theme);
+        }}
         onOpenQueue={() => setIsDrawerOpen(true)}
         onOpenCreator={() => setIsCreatorModalOpen(true)}
       />
 
       {/* Main App Content Flow */}
       <main className="flex-1 pb-16">
-        {/* Hero Section */}
+        {/* Hero Section (Top pill badge removed) */}
         <HeroSection onSelectPlatformSample={handleSelectPlatformSample} />
 
         {/* Command Search Bar or Batch Mode View */}
@@ -293,7 +333,7 @@ export const App: React.FC = () => {
                 <p className="text-white/70 leading-relaxed">{analysisError}</p>
                 <div className="mt-2 flex items-center gap-2">
                   <button
-                    onClick={handleAnalyze}
+                    onClick={() => handleAnalyze()}
                     className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 font-semibold text-xs transition-colors"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
@@ -312,6 +352,11 @@ export const App: React.FC = () => {
         {analyzedMedia && !isBatchMode && (
           <MediaBentoDashboard
             media={analyzedMedia}
+            onClearMedia={() => {
+              setUrl('');
+              setAnalyzedMedia(null);
+              setAnalysisError(null);
+            }}
             onDownloadVideo={handleDownloadVideo}
             onDownloadAudio={handleDownloadAudio}
             onTrimMedia={handleTrimMedia}
