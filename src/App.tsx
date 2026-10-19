@@ -27,20 +27,28 @@ export const App: React.FC = () => {
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const lastAttemptedUrlRef = useRef<string>('');
 
   // Cloud backend live health & auto-reconnect engine
   const backendHealth = useBackendHealth();
+  const prevBackendStatusRef = useRef(backendHealth.status);
 
-  // Synchronous client-side platform detection (or selected platform when input is empty)
+  // Synchronous client-side platform detection (or analyzed media platform / selected platform when input is empty)
   const detectedPlatform = useMemo(() => {
     if (url.trim()) {
-      return detectClientPlatform(url);
+      const clientDetected = detectClientPlatform(url);
+      if (clientDetected.id !== 'generic') {
+        return clientDetected;
+      }
+    }
+    if (analyzedMedia?.platform && analyzedMedia.platform.id !== 'generic') {
+      return analyzedMedia.platform;
     }
     if (selectedPlatformId && PLATFORM_THEMES[selectedPlatformId]) {
       return PLATFORM_THEMES[selectedPlatformId];
     }
-    return PLATFORM_THEMES.generic;
-  }, [url, selectedPlatformId]);
+    return analyzedMedia?.platform || PLATFORM_THEMES.generic;
+  }, [url, selectedPlatformId, analyzedMedia]);
 
   // Dynamic chameleon color injection
   const { updateTheme } = useChameleonTheme(detectedPlatform);
@@ -74,15 +82,30 @@ export const App: React.FC = () => {
   }, [analyzedMedia, updateTheme]);
 
   /**
-   * Main analyze submission handler (supports URL override for instant auto-analysis)
+   * Handle user editing the URL input - clear stale errors when a new URL is typed
+   */
+  const handleUrlChange = (newUrl: string) => {
+    setUrl(newUrl);
+    if (newUrl.trim() !== lastAttemptedUrlRef.current && analysisError) {
+      setAnalysisError(null);
+    }
+  };
+
+  /**
+   * Main analyze submission handler (supports URL override and force retry)
    */
   const handleAnalyze = useCallback(
-    async (overrideUrl?: string) => {
+    async (overrideUrl?: string, forceRetry = false) => {
       const targetUrl = (overrideUrl || url).trim();
       if (!targetUrl || targetUrl.length < 5 || isAnalyzing) return;
 
       // Avoid re-analyzing if this exact URL is already loaded
-      if (analyzedMedia && analyzedMedia.url === targetUrl) {
+      if (!forceRetry && analyzedMedia && analyzedMedia.url === targetUrl) {
+        return;
+      }
+
+      // Avoid automatic re-analyzing if this exact URL was already attempted and failed
+      if (!forceRetry && lastAttemptedUrlRef.current === targetUrl) {
         return;
       }
 
@@ -92,6 +115,7 @@ export const App: React.FC = () => {
         return;
       }
 
+      lastAttemptedUrlRef.current = targetUrl;
       setIsAnalyzing(true);
       setAnalysisError(null);
 
@@ -122,21 +146,22 @@ export const App: React.FC = () => {
       setUrl(clean);
       setAnalysisError(null);
       if (backendHealth.isHealthy && isValidMediaUrl(clean)) {
-        handleAnalyze(clean);
+        handleAnalyze(clean, true);
       }
     }
   };
 
   /**
    * Auto-analyze when user enters or pastes a valid media URL (with 600ms debounce),
-   * strictly guarded until backend engine is verified online and healthy.
+   * strictly guarded until backend engine is verified online and healthy,
+   * and never re-triggering for an already attempted URL.
    */
   useEffect(() => {
     const trimmed = url.trim();
     if (!trimmed || isAnalyzing || isBatchMode || !backendHealth.isHealthy) return;
 
     if (isValidMediaUrl(trimmed)) {
-      if (analyzedMedia && analyzedMedia.url === trimmed) {
+      if (lastAttemptedUrlRef.current === trimmed || (analyzedMedia && analyzedMedia.url === trimmed)) {
         return;
       }
 
@@ -148,11 +173,19 @@ export const App: React.FC = () => {
     }
   }, [url, isAnalyzing, isBatchMode, analyzedMedia, backendHealth.isHealthy, handleAnalyze]);
 
-  // Auto-resume analysis or focus input as soon as backend engine wakes up
+  // Auto-resume analysis or focus input strictly when backend engine transitions from waking/checking to healthy
   useEffect(() => {
-    if (backendHealth.status === 'healthy') {
+    const prevStatus = prevBackendStatusRef.current;
+    prevBackendStatusRef.current = backendHealth.status;
+
+    if (prevStatus !== 'healthy' && backendHealth.status === 'healthy') {
       const trimmed = url.trim();
-      if (trimmed && isValidMediaUrl(trimmed) && (!analyzedMedia || analyzedMedia.url !== trimmed)) {
+      if (
+        trimmed &&
+        isValidMediaUrl(trimmed) &&
+        lastAttemptedUrlRef.current !== trimmed &&
+        (!analyzedMedia || analyzedMedia.url !== trimmed)
+      ) {
         handleAnalyze(trimmed);
       } else if (!analyzedMedia) {
         inputRef.current?.focus();
@@ -165,6 +198,7 @@ export const App: React.FC = () => {
    */
   const handleClear = useCallback(() => {
     setUrl('');
+    lastAttemptedUrlRef.current = '';
     setAnalyzedMedia(null);
     setAnalysisError(null);
     setSelectedPlatformId(null);
@@ -190,6 +224,7 @@ export const App: React.FC = () => {
       const currentUrlPlatform = detectClientPlatform(url);
       if (currentUrlPlatform.id !== platformId) {
         setUrl('');
+        lastAttemptedUrlRef.current = '';
         setAnalyzedMedia(null);
         setAnalysisError(null);
       }
@@ -384,7 +419,7 @@ export const App: React.FC = () => {
         {/* Hero Section */}
         <HeroSection
           selectedPlatformId={
-            url.trim() && detectedPlatform.id !== 'generic'
+            detectedPlatform.id !== 'generic'
               ? detectedPlatform.id
               : selectedPlatformId
           }
@@ -401,7 +436,7 @@ export const App: React.FC = () => {
         ) : (
           <SpotlightCommandBar
             url={url}
-            setUrl={setUrl}
+            setUrl={handleUrlChange}
             inputRef={inputRef}
             detectedPlatform={detectedPlatform}
             isAnalyzing={isAnalyzing}
@@ -425,7 +460,7 @@ export const App: React.FC = () => {
                 <p className="text-white/70 leading-relaxed">{analysisError}</p>
                 <div className="mt-2 flex items-center gap-2">
                   <button
-                    onClick={() => handleAnalyze()}
+                    onClick={() => handleAnalyze(undefined, true)}
                     className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 font-semibold text-xs transition-colors"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
